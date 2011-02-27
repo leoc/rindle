@@ -1,0 +1,3 @@
+class KindleManager::Library
+  
+end
