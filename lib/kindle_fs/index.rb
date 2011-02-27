@@ -40,6 +40,15 @@ module KindleFS
       index
     end
 
+    # removes a value from the index
+    def self.remove(value)
+      if @@index[value].nil?
+        @@index.delete(@@index.index(value))
+      else
+        @@index.delete(value)
+      end
+    end
+    
     # creates the file handler for the kindlefs index file
     # if the file did not exists, it is created, otherwise loaded and parsed
     # afterwards the index gets updated and the new new one will be saved
