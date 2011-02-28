@@ -1,9 +1,10 @@
+# -*- coding: utf-8 -*-
 require "rubygems"
 require "json"
 require "digest/sha1"
 
 def hash(value)
-  Digest::SHA1.hexdigest("/mnt/us/#{value}")
+  Digest::SHA1.hexdigest(value)
 end
 
 module KindleFS
@@ -26,9 +27,14 @@ module KindleFS
     
     # scans through all the documents on the kindle
     # adds indices or removes if necessary
+    # TODO: handle pictures aswell
     def self.update
-      Dir["#{@@kindle_root}/documents/*.mobi"].each do |element|
-        puts element
+      documents = Dir[File.join(@@kindle_root, '{documents,pictures}', '*.{mobi,azw,pdf}')]
+      documents.map! do |element|
+        element.gsub(@@kindle_root, '/mnt/us')
+      end
+      documents.each do |element|
+        add(element)
       end
     end
     
@@ -49,25 +55,27 @@ module KindleFS
       end
     end
     
-    # creates the file handler for the kindlefs index file
-    # if the file did not exists, it is created, otherwise loaded and parsed
-    # afterwards the index gets updated and the new new one will be saved
+    # loads the index file from the kindles system directory
+    # if it does not exist, an empty hash will be loaded and the index will be updated accordingly
     def self.load(kindle_root)
-      @@kindle_root = kindle_root
-      if File.exists?(File.join(kindle_root, 'system', 'kindlefs_index.json'))
-        @@index_file = File.new(File.join(kindle_root, 'system', 'kindlefs_index.json'))
-        @@index = JSON.load(@@index_file)
-      else
-        @@index_file = File.new(File.join(kindle_root, 'system', 'kindlefs_index.json'), "w+")
+      @@kindle_root = kindle_root.sub(/#{Regexp.escape(File::SEPARATOR)}$/, '')
+      begin
+        file = File.new(File.join(@@kindle_root, 'system', 'kindlefs_index.json'), 'r')
+        @@index = JSON.load(file)
+        file.close
+      rescue Exception => e
         @@index = JSON.parse("{}")
       end
       update
+      puts @@index.inspect
       save
     end
     
     # dumps the index onto the kindle system directory
-    def save
-      JSON.dump(@@index, @@index_file)
+    def self.save
+      file = File.new(File.join(@@kindle_root, 'system', 'kindlefs_index.json'), 'w+')
+      JSON.dump(@@index, file)
+      file.close
     end
   end
 end
