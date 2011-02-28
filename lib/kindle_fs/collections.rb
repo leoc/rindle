@@ -10,7 +10,7 @@ module KindleFS
     end
     
     def method_missing(name, *args, &block)
-      @collections.send(name, *args, &block)
+      @@collections.send(name, *args, &block)
     end
     
     def self.save
@@ -19,8 +19,8 @@ module KindleFS
     
     def self.load(kindle_root)
       @@collections_file = File.new(File.join(kindle_root, 'system', 'collections.json'))
-      @@collections = JSON.load(@collections_file)
-      @@collections.merge!(@collections) do |name, collection|
+      @@collections = JSON.load(@@collections_file)
+      @@collections.merge!(@@collections) do |name, collection|
         Collection.new.merge(collection)
       end
     end
