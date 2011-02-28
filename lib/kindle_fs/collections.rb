@@ -18,15 +18,18 @@ module KindleFS
     # writes the collection back to the kindle
     def self.save
       file = File.new(File.join(@@kindle_root, 'system', 'collections.json'), 'w+')
-      JSON.dump(@@collections, @@collections_file)
+      JSON.dump(@@collections, file)
       file.close
     end
 
     # loads the collections file from the kindles system directory
     def self.load(kindle_root)
-      file = File.new(File.join(kindle_root, 'system', 'collections.json'), 'r')
-      @@collections = JSON.load(@@collections_file)
+      @@kindle_root = kindle_root
+      file = File.new(File.join(@@kindle_root, 'system', 'collections.json'), 'r')
+      @@collections = JSON.load(file)
       file.close
+      # converts the collections subhashes into collection instances
+      # this results in an easier access
       @@collections.merge!(@@collections) do |name, collection|
         Collection.new.merge(collection)
       end
