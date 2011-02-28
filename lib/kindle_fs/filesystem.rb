@@ -5,7 +5,7 @@ module KindleFS
     end
     
     def contents path
-      puts "contents #{path}"
+#      puts "contents #{path}"
       if path == '/'
         [ 'collections', 'books', 'pictures' ]
       elsif path =~ /^\/collections$/
@@ -28,58 +28,58 @@ module KindleFS
     end
     
     def directory?(path)
-      puts "----- #{path} file/dir?"
+#      puts "----- #{path} file/dir?"
       !file?(path)
     end
     
     def executable?(path)
-      puts "----- executable? #{path}"
+#      puts "----- executable? #{path}"
       false
     end
 
     def size(path)
-      puts "----- size #{path}"
+#      puts "----- size #{path}"
       500
     end
     
     def can_delete?(path)
-      puts "----- can_delete? #{path}"
+#      puts "----- can_delete? #{path}"
       true
     end
     
     def can_write?(path)
-      puts "----- can_write? #{path}"
+#      puts "----- can_write? #{path}"
       true
     end
 
     def can_mkdir?(path)
-      puts "----- can_mkdir? #{path}"
+#      puts "----- can_mkdir? #{path}"
       true
     end
     
     def can_rmdir?(path)
-      puts "----- can_rmdir? #{path}"
+#      puts "----- can_rmdir? #{path}"
       true
     end
 
     def touch(path)
-      puts "----- touch #{path}"
+#      puts "----- touch #{path}"
     end
     
     def mkdir(path)
-      puts "----- mkdir #{path}"
+#      puts "----- mkdir #{path}"
     end
 
     def rmdir(path)
-      puts "----- rmdir #{path}"
+#      puts "----- rmdir #{path}"
     end
     
     def write_to path, body
-      puts "write to #{path} - #{body.length}"
+#      puts "write to #{path} - #{body.length}"
     end
     
     def read_file path
-      puts "read file #{path}"
+#      puts "read file #{path}"
       "dummy"
     end
   end
