@@ -3,27 +3,27 @@ require 'fusefs'
 
 require 'kindle_fs/index'
 require 'kindle_fs/collections'
+require 'kindle_fs/filesystem'
 
 if ARGV.length < 1
-  puts "usage: kindle_manager <kindle_root>"
+  puts "usage: kindle_manager <kindle_root> <mount_point>"
   exit 1
 end
 
-kindle_root = ARGV[0]
-
-index = KindleFS::Index.new(kindle_root)
-index.load do |job, percentage|
-  puts "#{job} - #{percentage}"
-end
-collections = KindleFS::Collections.new(kindle_root)
-collections.load do |job, percentage|
-  puts "#{job} #{percentage}"
+trap("INT") do
+  puts "exiting kindlefs ..."
+  FuseFS.exit
+  FuseFS.unmount
+  exit
 end
 
-kindle = KindleFS.new(kindle_root, collections, index)
-FuseFS.set_root( kindle )
+kindle_root = ARGV.shift.sub(/#{Regexp.escape(File::SEPARATOR)}$/, '')
+mount_path = ARGV.shift.sub(/#{Regexp.escape(File::SEPARATOR)}$/, '')
 
-# Mount under a directory given on the command line.
-FuseFS.mount_under ARGV.shift
+KindleFS::Index.load(kindle_root)
+KindleFS::Collections.load(kindle_root)
+
+kindle = KindleFS::Filesystem.new(kindle_root)
+FuseFS.set_root(kindle)
+FuseFS.mount_under mount_path
 FuseFS.run
-
