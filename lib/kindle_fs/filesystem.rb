@@ -5,7 +5,7 @@ module KindleFS
     end
     
     def contents path
-#      puts "contents #{path}"
+      puts "contents #{path}"
       if path == '/'
         [ 'collections', 'books', 'pictures' ]
       elsif path =~ /^\/collections$/
@@ -15,6 +15,9 @@ module KindleFS
       else
         []
       end
+    rescue Exception => e
+      puts e.inspect
+      puts e.backtrace
     end
     
     def file?(path)
