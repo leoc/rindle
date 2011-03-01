@@ -3,12 +3,12 @@ require "rubygems"
 require "json"
 require "digest/sha1"
 
-def hash(value)
-  Digest::SHA1.hexdigest(File.join('/mnt/us', value))
-end
-
 module KindleFS
   class Index < Hash
+    def hash(value)
+      Digest::SHA1.hexdigest(File.join('/mnt/us', value))
+    end
+
     # returns the path for an index
     def self.path_for(index)
       @@index[index]
