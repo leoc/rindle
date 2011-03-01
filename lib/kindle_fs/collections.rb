@@ -11,7 +11,7 @@ module KindleFS
     end
 
     # proxy all other method calls to the collections hash
-    def method_missing(name, *args, &block)
+    def self.method_missing(name, *args, &block)
       @@collections.send(name, *args, &block)
     end
 
