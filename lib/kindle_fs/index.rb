@@ -21,8 +21,10 @@ module KindleFS
 
     # search a index, filepath pair via regular expression
     def self.search(regexp)
-      @@index
-      [ index, name ]
+      @@index.each_pair do |index,path|
+        return [ index, name ] if path =~ regexp
+      end
+      nil
     end
     
     # scans through all the documents on the kindle
