@@ -4,19 +4,19 @@ require "json"
 require "digest/sha1"
 
 def hash(value)
-  Digest::SHA1.hexdigest(value)
+  Digest::SHA1.hexdigest(File.join('/mnt/us', value))
 end
 
 module KindleFS
   class Index < Hash
     # returns the path for an index
-    def self.name_for(index)
+    def self.path_for(index)
       @@index[index]
     end
     
     # returns the index for a file path
-    def self.index_for(name)
-      @@index.index(name)
+    def self.index_for(path)
+      @@index.index(path)
     end
 
     # search a index, filepath pair via regular expression
@@ -27,22 +27,32 @@ module KindleFS
     
     # scans through all the documents on the kindle
     # adds indices or removes if necessary
-    # TODO: handle pictures aswell
     def self.update
+      # add new ones
       documents = Dir[File.join(@@kindle_root, '{documents,pictures}', '*.{mobi,azw,pdf}')]
       documents.map! do |element|
-        element.gsub(@@kindle_root, '/mnt/us')
+        element.gsub(@@kindle_root, '')
       end
       documents.each do |element|
         add(element)
       end
+      # remove deleted ones
+      @@index = @@index.delete_if do |index,path|
+        !File.exists?(File.join(@@kindle_root, path))
+      end
     end
     
-    # adds a filename to the index, while automatically creating the sha1 hash
-    # TODO: handle the amazon kindle book store filenames specially
-    def self.add(filename)
-      index = hash(filename)
-      @@index[index] = filename
+    # adds a path to the index, while automatically creating the sha1 hash
+    def self.add(path)
+      if path =~ /([\w\s]+)-asin_([A-Z0-9]+)-type_([A-Z]+)-v_[0-9]+.azw/
+        # it's a kindle book store doc
+        # we have to build the index ourselves
+        index = "##{$2}^#{$3}"
+      else
+        # it's a document not from the kindle book store
+        index = "*#{hash(path)}"
+      end      
+      @@index[index] = path
       index
     end
 
@@ -58,7 +68,7 @@ module KindleFS
     # loads the index file from the kindles system directory
     # if it does not exist, an empty hash will be loaded and the index will be updated accordingly
     def self.load(kindle_root)
-      @@kindle_root = kindle_root.sub(/#{Regexp.escape(File::SEPARATOR)}$/, '')
+      @@kindle_root = kindle_root
       begin
         file = File.new(File.join(@@kindle_root, 'system', 'kindlefs_index.json'), 'r')
         @@index = JSON.load(file)
@@ -67,7 +77,6 @@ module KindleFS
         @@index = JSON.parse("{}")
       end
       update
-      puts @@index.inspect
       save
     end
     
