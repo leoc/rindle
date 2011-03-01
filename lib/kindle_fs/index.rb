@@ -31,7 +31,7 @@ module KindleFS
     # adds indices or removes if necessary
     def self.update
       # add new ones
-      documents = Dir[File.join(@@kindle_root, '{documents,pictures}', '*.{mobi,azw,pdf}')]
+      documents = Dir[File.join(@@kindle_root, '{documents,pictures}', '*.{mobi,azw,azw1,pdf}')]
       documents.map! do |element|
         element.gsub(@@kindle_root, '')
       end
