@@ -2,7 +2,7 @@ module KindleFS
   class Collection < Hash
     # a more rails'ish versions to retrieve all collections
     def self.all
-      Collections.data.map do |name|
+      Collections.data.keys.map do |name|
         name.gsub('@en-US', '')
       end
     end
