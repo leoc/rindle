@@ -51,9 +51,16 @@ module KindleFS
     
     # returns a list of filenames for the indices in the collections.json
     def itemnames
-      self['items'].map do |index|
-        Index.name_for(index)
+      names = self['items'].map do |index|
+        path = Index.path_for(index)
+        if path
+          File.basename(path)
+        else
+          puts "missing index entry '#{index}'"
+          nil
+        end
       end
+      names.compact
     end
     
     # returns a DateTime of the last access of the collection
