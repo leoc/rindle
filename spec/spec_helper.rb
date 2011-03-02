@@ -11,9 +11,9 @@ def kindle_root; File.join(File.dirname(__FILE__), 'data', 'kindle'); end
 # this is to reset the Singleton'ish nature of the Kindle module
 module Kindle
   def self.reset
-    @@root_path = nil
-    @@collections = nil
-    @@index = nil
+    self.class_variables.each do |var|
+      eval("#{var} = nil")
+    end
   end
 end
 
