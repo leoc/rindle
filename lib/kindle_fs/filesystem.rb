@@ -1,4 +1,4 @@
-module KindleFS
+module Kindle
   class Filesystem
     def initialize kindle_root
       @kindle_root = kindle_root

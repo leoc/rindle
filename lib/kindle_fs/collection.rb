@@ -1,5 +1,14 @@
-module KindleFS
+module Kindle
   class Collection < Hash
+    attr_accessor :name, :indices, :last_access
+    
+    def initialize(name, content)
+      @name = name
+      @indices = content['items']
+      @last_access = content['lastAccess']
+      # stuff all that from hash into 
+    end
+
     # a more rails'ish versions to retrieve all collections
     def self.all
       Collections.data.keys.map do |name|

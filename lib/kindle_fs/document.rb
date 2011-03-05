@@ -1,4 +1,4 @@
-module KindleFS
+module Kindle
   class Document    
     def initialize index, filename
       @index = index

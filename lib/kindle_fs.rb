@@ -27,8 +27,26 @@ module Kindle
       raise NotLoaded
     end
   end
+
+  def self.index
+    if @@index
+      @@index
+    else
+      raise NotLoaded
+    end
+  end
+
+  def self.collections
+    if @@collections
+      @@collections
+    else
+      raise NotLoaded
+    end
+  end
   
   def self.load root_path
     @@root_path = root_path
+    @@index = Index.new(root_path)
+    @@collections = Collections.new(root_path)
   end
 end

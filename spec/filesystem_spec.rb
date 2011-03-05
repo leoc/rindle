@@ -1,6 +1,6 @@
 require "spec_helper"
 
-describe KindleFS::Filesystem do
+describe Kindle::Filesystem do
   context 'when mounted' do
     context 'browsing /collections' do
       it 'shows the collections'

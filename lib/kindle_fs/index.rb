@@ -3,8 +3,12 @@ require "rubygems"
 require "json"
 require "digest/sha1"
 
-module KindleFS
+module Kindle
   class Index < Hash
+    def initialize root_path
+      # loads the index
+    end
+    
     def hash(value)
       Digest::SHA1.hexdigest(File.join('/mnt/us', value))
     end
@@ -45,7 +49,7 @@ module KindleFS
     end
     
     # adds a path to the index, while automatically creating the sha1 hash
-    def self.add(path)
+    def add(path)
       if path =~ /([\w\s]+)-asin_([A-Z0-9]+)-type_([A-Z]+)-v_[0-9]+.azw/
         # it's a kindle book store doc
         # we have to build the index ourselves
@@ -54,7 +58,7 @@ module KindleFS
         # it's a document not from the kindle book store
         index = "*#{hash(path)}"
       end      
-      @@index[index] = path
+      @index[index] = path
       index
     end
 
@@ -83,9 +87,9 @@ module KindleFS
     end
     
     # dumps the index onto the kindle system directory
-    def self.save
-      file = File.new(File.join(@@kindle_root, 'system', 'kindlefs_index.json'), 'w+')
-      JSON.dump(@@index, file)
+    def save
+      file = File.new(File.join(@kindle_root, 'system', 'kindlefs_index.json'), 'w+')
+      JSON.dump(@index, file)
       file.close
     end
   end
