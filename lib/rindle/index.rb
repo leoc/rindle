@@ -3,7 +3,7 @@ require "rubygems"
 require "json"
 require "digest/sha1"
 
-module Kindle
+module Rindle
   class Index < Hash
     def initialize
       @index = {}
@@ -47,10 +47,5 @@ module Kindle
       end
     end
     
-    def save
-      File.open(File.join(@root_path, 'system', 'kindlefs_index.json'), 'w+') do |file|
-        JSON.dump(self, file)
-      end
-    end
   end
 end

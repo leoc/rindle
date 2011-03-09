@@ -1,9 +1,7 @@
-module Kindle
+module Rindle
   class Document    
-    def initialize index, filename
-      @index = index
-      @filename = filename
-      @collections = Collections.containing(index)
+    def initialize index
+      
     end
     
     def self.by value

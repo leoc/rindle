@@ -1,9 +1,9 @@
 require 'rubygems'
 require 'json'
 
-require 'kindle_fs/collection'
+require 'rindle/collection'
 
-module Kindle
+module Rindle
   class Collections < Hash
     
     class NoSuchFile < Exception; end

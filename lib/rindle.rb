@@ -1,8 +1,8 @@
-require 'kindle_fs/index'
-require 'kindle_fs/collections'
-require 'kindle_fs/collection'
-require 'kindle_fs/document'
-require 'kindle_fs/filesystem'
+require 'rindle/index'
+require 'rindle/collections'
+require 'rindle/collection'
+require 'rindle/document'
+require 'rindle/filesystem'
 
 # This module is used to load the Kindles state into the
 # data structures, which are used to let you access the Kindles
@@ -10,10 +10,10 @@ require 'kindle_fs/filesystem'
 #
 # Load from a specific path
 #
-#   Kindle.load(path)
+#   Rindle.load(path)
 #
 # After that you may use the models Collection, Document, Album
-module Kindle  
+module Rindle  
   @@root_path = nil
   @@collections = nil
   @@index = nil

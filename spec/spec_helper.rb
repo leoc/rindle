@@ -1,7 +1,7 @@
 $LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
 $LOAD_PATH.unshift(File.dirname(__FILE__))
 
-require 'kindle_fs'
+require 'rindle'
 
 require 'rubygems'
 require 'rspec'
@@ -9,7 +9,7 @@ require 'rspec'
 def kindle_root; File.join(File.dirname(__FILE__), 'data', 'kindle'); end
 
 # this is to reset the Singleton'ish nature of the Kindle module
-module Kindle
+module Rindle
   def self.reset
     self.class_variables.each do |var|
       eval("#{var} = nil")

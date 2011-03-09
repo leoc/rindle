@@ -1,17 +1,18 @@
-module Kindle
+module Rindle
   class Filesystem
     def initialize kindle_root
       @kindle_root = kindle_root
     end
     
     def contents path
-      puts "contents #{path}"
-      if path == '/'
+      case path
+      when '/'
         [ 'collections', 'books', 'pictures' ]
-      elsif path =~ /^\/collections$/
-        Collection.all
-      elsif path =~ /^\/collections\/([A-Za-z0-9_\-\s'"]+)/
-        Collection.find($1).itemnames
+      when /^\/collections/
+        Collection.all.map(&:name)
+      when /^\/collections\/([A-Za-z0-9_\-\s'"]+)/
+        collection = Collection.find($1)
+        collection.files.map(&:name)
       else
         []
       end

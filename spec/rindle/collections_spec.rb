@@ -1,8 +1,8 @@
 require "spec_helper"
 
-describe Kindle::Collections do
+describe Rindle::Collections do
   it 'loads the kindles collections.json file' do
-    collections = Kindle::Collections.load(kindle_root)
+    collections = Rindle::Collections.load(kindle_root)
     collections.should == {
       "collection1@en-US" => {
         "items" => ["*18be6fcd5d5df39c1a96cd22596bbe7fe01db9b7", "*0849dd9b85fc341d10104f56985e423b3848e1f3"],
