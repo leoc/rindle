@@ -5,92 +5,52 @@ require "digest/sha1"
 
 module Kindle
   class Index < Hash
-    def initialize root_path
-      # loads the index
+    def initialize
+      @index = {}
+    end
+        
+    def self.load(root_path)
+      Index.new.load(root_path)
+    end
+
+    def load(root_path)
+      @root_path = root_path
+      documents = Dir[File.join(@root_path, '{documents,pictures}', '*.{mobi,azw,azw1,pdf}')]
+      documents.each do |element|
+        add(element.gsub(@root_path, ''))
+      end
+      self
     end
     
     def hash(value)
       Digest::SHA1.hexdigest(File.join('/mnt/us', value))
     end
-
-    # returns the path for an index
-    def self.path_for(index)
-      @@index[index]
-    end
     
-    # returns the index for a file path
-    def self.index_for(path)
-      @@index.index(path)
-    end
-
-    # search a index, filepath pair via regular expression
-    def self.search(regexp)
-      @@index.each_pair do |index,path|
-        return [ index, name ] if path =~ regexp
-      end
-      nil
-    end
-    
-    # scans through all the documents on the kindle
-    # adds indices or removes if necessary
-    def self.update
-      # add new ones
-      documents = Dir[File.join(@@kindle_root, '{documents,pictures}', '*.{mobi,azw,azw1,pdf}')]
-      documents.map! do |element|
-        element.gsub(@@kindle_root, '')
-      end
-      documents.each do |element|
-        add(element)
-      end
-      # remove deleted ones
-      @@index = @@index.delete_if do |index,path|
-        !File.exists?(File.join(@@kindle_root, path))
-      end
-    end
-    
-    # adds a path to the index, while automatically creating the sha1 hash
     def add(path)
       if path =~ /([\w\s]+)-asin_([A-Z0-9]+)-type_([A-Z]+)-v_[0-9]+.azw/
-        # it's a kindle book store doc
-        # we have to build the index ourselves
+        # (it's a kindle store document, with a special naming)
         index = "##{$2}^#{$3}"
       else
-        # it's a document not from the kindle book store
+        # (it's a non-amazon document)
         index = "*#{hash(path)}"
       end      
-      @index[index] = path
+      self[index] = path
       index
     end
-
-    # removes a value from the index
-    def self.remove(value)
-      if @@index[value].nil?
-        @@index.delete(@@index.index(value))
+    
+    # removes either a path or an index
+    def remove(value)
+      if self[value].nil?
+        delete(index(value))
       else
-        @@index.delete(value)
+        delete(value)
       end
     end
     
-    # loads the index file from the kindles system directory
-    # if it does not exist, an empty hash will be loaded and the index will be updated accordingly
-    def self.load(kindle_root)
-      @@kindle_root = kindle_root
-      begin
-        file = File.new(File.join(@@kindle_root, 'system', 'kindlefs_index.json'), 'r')
-        @@index = JSON.load(file)
-        file.close
-      rescue Exception => e
-        @@index = JSON.parse("{}")
-      end
-      update
-      save
-    end
-    
-    # dumps the index onto the kindle system directory
     def save
-      file = File.new(File.join(@kindle_root, 'system', 'kindlefs_index.json'), 'w+')
-      JSON.dump(@index, file)
-      file.close
+      File.open(File.join(@root_path, 'system', 'kindlefs_index.json'), 'w+') do |file|
+        JSON.dump(self, file)
+      end
     end
   end
 end
