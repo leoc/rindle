@@ -13,7 +13,8 @@ describe Kindle::Collections do
         "lastAccess" => 1298745909918
       },
       "amazon books@en-US" => {
-        "items" => ["#B001UQ5HVA^EBSP","#B000JQU1VS^EBOK"]
+        "items" => ["#B001UQ5HVA^EBSP","#B000JQU1VS^EBOK"],
+        "lastAccess" => 1298745909917
       }
     }
   end
