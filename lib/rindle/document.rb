@@ -1,7 +1,17 @@
 module Rindle
-  class Document    
+  class Document
+    class NotFound < Exception; end
+    
+    attr_accessor :index, :path, :file
+    
     def initialize index
-      
+      @path = Rindle.index[index]
+      raise NotFound, "Index #{index} not found!" if @path.nil?
+      @index = index
+    end
+
+    def == other
+      @index == other.index 
     end
     
     def self.by value
@@ -13,5 +23,10 @@ module Rindle
       end
       File.new(index, name)
     end
+    
+    def name
+      
+    end
+
   end
 end
