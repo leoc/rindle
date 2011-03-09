@@ -10,47 +10,77 @@ describe Rindle::Collection do
       Rindle::Collection.find(:all).map(&:name).should == Rindle::Collection.all.map(&:name)
     end
   end
+
+  context '#first' do
+    it 'invokes Collection.find with parameter :first' do
+      Rindle::Collection.find(:first).should == Rindle::Collection.first
+    end
+  end
   
   context '#find' do
     it 'returns an array of Kindle::Collection objects' do
       Rindle::Collection.find
     end
 
-    context 'filters' do
+    context 'finds all filtered' do
       it 'by name with string' do
         name = "collection"
-        collections = Rindle::Collection.all(:named => name)
+        collections = Rindle::Collection.find(:all, :named => name)
         collections.map(&:name).should == ['collection1', 'collection2']
       end
+
       it 'by name with regular expression' do
         name = /collection[1|3]/
-        collections = Rindle::Collection.all(:named => name)
+        collections = Rindle::Collection.find(:all, :named => name)
         collections.map(&:name).should == ['collection1']        
       end
-      it 'by including one document' do
-        pending
-        
-        collections = Rindle::Collection.all(:including => Rindle::Document.new('#B001UQ5HVA^EBSP'))
-        collections.map(&:name).should == ['amazon books']
-      end
-      it 'by including one of an array of documents'
+
       it 'by including index' do
-        collections = Rindle::Collection.all(:including => '#B001UQ5HVA^EBSP')
+        collections = Rindle::Collection.find(:all, :including => '#B001UQ5HVA^EBSP')
         collections.map(&:name).should == ['amazon books']
       end
+      
       it 'by including one of an array of indices' do
-        collections = Rindle::Collection.all(:including => [ '*440f49b58ae78d34f4b8ad3233f04f6b8f5490c2', '#B001UQ5HVA^EBSP' ])
+        collections = Rindle::Collection.find(:all, :including => [ '*440f49b58ae78d34f4b8ad3233f04f6b8f5490c2', '#B001UQ5HVA^EBSP' ])
         collections.map(&:name).should == ['collection2','amazon books']        
       end
+
       it 'by last access time' do
-        collections = Rindle::Collection.all(:accessed => 1298745909917)
+        collections = Rindle::Collection.find(:all, :accessed => 1298745909917)
         collections.map(&:name).should == ['amazon books']
+      end
+    end
+
+    context 'finds first filtered' do
+      it 'by name' do
+        collection = Rindle::Collection.find(:first, :named => 'collection1')
+        collection.name.should == 'collection1'
+      end
+
+      it 'by included index' do
+        collection = Rindle::Collection.find(:first, :including => '*440f49b58ae78d34f4b8ad3233f04f6b8f5490c2')
+        collection.name.should == 'collection2'
+      end
+
+      it 'by included index/indices from array' do
+        collection = Rindle::Collection.find(:first, :including => [ "*440f49b58ae78d34f4b8ad3233f04f6b8f5490c2", "*18be6fcd5d5df39c1a96cd22596bbe7fe01db9b7" ])
+        ['collection1', 'collection2'].should include(collection.name)
+      end
+
+      it 'by last access time' do
+        collection = Rindle::Collection.find(:first, :accessed => 1298745909917)
+        collection.name.should == 'amazon books'
       end
     end
   end
   
-  context '#files' do
-    it 'returns an array of Kindle::Document objects'
+  context '#documents' do
+    it 'returns an array of Rindle::Document objects' do
+      collection = Rindle::Collection.find(:first, :named => 'collection1')
+      collection.documents.each do |document|
+        document.should be_a(Rindle::Document)
+      end
+    end
   end
   
   context '#to_hash' do
