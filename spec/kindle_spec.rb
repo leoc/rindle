@@ -5,12 +5,7 @@ describe Kindle do
     Kindle.reset
   end
   
-  context '::load' do
-    it 'raises a NotLoaded error if not loaded'
-    it 'returns an instance of Kindle::Index'
-  end
-
-  context '::collections' do
+  context '.collections' do
     it 'raises a NotLoaded error if not loaded' do
       lambda { Kindle::collections }.should raise_error(Kindle::NotLoaded)
     end
@@ -20,7 +15,7 @@ describe Kindle do
     end
   end
 
-  context '::index' do
+  context '.index' do
     it 'raises a NotLoaded error if not loaded' do
       lambda { Kindle::index }.should raise_error(Kindle::NotLoaded)
     end
@@ -30,7 +25,7 @@ describe Kindle do
     end
   end
   
-  context '::root_path' do
+  context '.root_path' do
     it 'provieds a string if loaded' do
       Kindle::load(kindle_root)
       Kindle::root_path.should be_a(String)

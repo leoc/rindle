@@ -46,7 +46,11 @@ module Kindle
   
   def self.load root_path
     @@root_path = root_path
-    @@index = Index.new(root_path)
-    @@collections = Collections.new(root_path)
+    @@index = Index.load(root_path)
+    @@collections = Collections.load(root_path)
+  end
+  
+  def self.save
+    @@collections.save
   end
 end
