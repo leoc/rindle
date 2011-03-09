@@ -1,18 +1,18 @@
 module Rindle
   class Filesystem
-    def initialize kindle_root
-      @kindle_root = kindle_root
-    end
-    
     def contents path
       case path
       when '/'
         [ 'collections', 'books', 'pictures' ]
-      when /^\/collections/
+      when /^\/collections$/
         Collection.all.map(&:name)
-      when /^\/collections\/([A-Za-z0-9_\-\s'"]+)/
-        collection = Collection.find($1)
-        collection.files.map(&:name)
+      when /^\/documents$/
+        [ 'not_yet_implemented' ]
+      when /^\/pictures$/
+        [ 'not_yet_implemented' ]
+      when /^\/collections\/([A-Za-z0-9_\-\s'"]+)$/
+        collection = Collection.find(:first, :named => $1)
+        collection.documents.map(&:filename)
       else
         []
       end
@@ -22,7 +22,7 @@ module Rindle
     end
     
     def file?(path)
-      if path =~ /\/(collections|books|pictures)/
+      if path =~ /^\/(collections|books|pictures)$/
         false
       elsif path =~ /^\/collections\/([A-Za-z0-9_\-\s'"]+)$/
         false
@@ -32,18 +32,15 @@ module Rindle
     end
     
     def directory?(path)
-#      puts "----- #{path} file/dir?"
       !file?(path)
     end
     
     def executable?(path)
-#      puts "----- executable? #{path}"
       false
     end
 
     def size(path)
-#      puts "----- size #{path}"
-      500
+      0
     end
     
     def can_delete?(path)
