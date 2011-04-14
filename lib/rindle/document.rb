@@ -24,8 +24,8 @@ module Rindle
       File.new(index, name)
     end
     
-    def name
-      
+    def filename
+      File.basename(@path)
     end
 
   end
