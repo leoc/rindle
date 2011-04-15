@@ -2,20 +2,20 @@ require 'fusefs'
 
 module Rindle
   class Filesystem < FuseFS::FuseDir
-
+    COLLECTION_NAME  = /([A-Za-z0-9_\-\s'"]+)/i
+    DOCUMENT_NAME    = /([A-Za-z0-9_\s]+\.[mobi|epub|rtf|pdf]+)/i
+    DOCUMENT_PATH    = /^\/collections\/#{COLLECTION_NAME}\/#{DOCUMENT_NAME}$/
+    COLLECTION_PATH  = /^\/collections\/#{COLLECTION_NAME}$/
+    
     def contents path
       puts "contents(#{path})"
       case path
-      when /^\/$$/
-        [ 'collections', 'books', 'pictures' ]
-      when /^\/collections$/
-        Collection.all.map(&:name)
-      when /^\/documents$/
-        [ 'not_yet_implemented' ]
-      when /^\/pictures$/
-        [ 'not_yet_implemented' ]
-      when /^\/collections\/(\._)?([A-Za-z0-9_\-\s'"]+)$/
-        collection = Collection.find(:first, :named => $3)
+      when /^\/$/ then [ 'collections', 'books', 'pictures' ]
+      when /^\/collections$/ then Collection.all.map(&:name)
+      when /^\/documents$/ then []
+      when /^\/pictures$/ then []
+      when COLLECTION_PATH
+        collection = Collection.find(:first, :named => $1)
         collection.documents.map(&:filename)
       else
         []
@@ -28,25 +28,25 @@ module Rindle
     def file?(path)
       puts "file?(#{path})"
       case path
-      when /^\/(collections|books|pictures)$/
-        false
-      when /^\/collections\/(\._)?([A-Za-z0-9_\-\s'"]+)$/
-        false
-      else
-        false
+      when DOCUMENT_PATH then true
+      else false
       end
+    rescue Exception => e
+      puts e.inspect
+      puts e.backtrace
     end
     
     def directory?(path)
       puts "directory?(#{path})"
       case path
-      when /^\/[collections|books|pictures]$/
-        true
-      when /^\/collections\/(\._)?([A-Za-z0-9_\-\s'"]+)$/
-        !Collection.first(:named => $3).nil?
-      else
-        false
+      when /^\/[collections|books|pictures]$/ then true
+      when COLLECTION_PATH then !Collection.first(:named => $1).nil?
+      else false
       end
+      #true
+    rescue Exception => e
+      puts e.inspect
+      puts e.backtrace
     end
     
     def executable?(path)
@@ -55,7 +55,7 @@ module Rindle
 
     def size(path)
       puts "size(#{path})"
-      0
+      1
     end
     
     def can_delete?(path)
@@ -84,16 +84,19 @@ module Rindle
     
     def mkdir(path)
       puts "mkdir(#{path})"
-      false
+      true
     end
 
     def rmdir(path)
       puts "rmdir(#{path})"
-      false
+      true
     end
     
     def write_to path, body
       puts "write_to(#{path}, #{body.length})"
+    rescue Exception => e
+      puts e.inspect
+      puts e.backtrace
     end
     
     def read_file path
@@ -101,6 +104,7 @@ module Rindle
       "dummy"
     rescue Exceptions => e
       puts e.inspect
+      puts e.backtrace
     end
   end
 end

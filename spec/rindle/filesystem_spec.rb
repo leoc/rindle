@@ -6,6 +6,26 @@ describe Rindle::Filesystem do
     @fs = Rindle::Filesystem.new
   end
 
+  context '#file?' do
+    it 'returns true if path to document given' do
+      @fs.file?('/collections/collection1/A test aswell.mobi').should == true
+    end
+
+    it 'returns false if path to collection given' do
+      @fs.file?('/collections/collection1').should == false
+    end
+  end
+
+  context '#directory?' do
+    it 'returns true if path to collection given' do
+      @fs.directory?('/collections/collection1').should == true
+    end
+
+    it 'returns false if path to document given' do
+      @fs.directory?('/collections/collection1/A test aswell.mobi').should == false
+    end
+  end
+  
   context '#contents' do
     it 'lists view options' do
       list = @fs.contents('/')
