@@ -45,6 +45,7 @@ module Rindle
           end
           return Collection.new(name.sub('@en-US',''), collection['items'], collection['lastAccess']) if match
         end        
+        nil
       end
       
       def find(method = :all, options={})
@@ -55,6 +56,10 @@ module Rindle
         collection = Collection.new(name, indices)
         Rindle.collections.merge(collection.to_hash)
         collection
+      end
+
+      def exists? options
+        !Collection.first(options).nil?
       end
     end
     

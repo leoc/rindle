@@ -4,6 +4,16 @@ describe Rindle::Collection do
   before(:all) do
     Rindle.load(kindle_root)
   end
+
+  context '#exists?' do
+    it 'returns true if the collection exists' do
+      Rindle::Collection.exists?(:named => 'collection1').should == true
+    end
+
+    it 'returns false if the collection does not exist' do
+      Rindle::Collection.exists?(:named => 'collection5').should == false
+    end
+  end
   
   context '#all' do
     it 'invokes Collection.find with parameter :all' do
