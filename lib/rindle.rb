@@ -4,6 +4,8 @@ require 'rindle/collection'
 require 'rindle/document'
 require 'rindle/filesystem'
 
+require 'rindle/mixins/regexp'
+
 # This module is used to load the Kindles state into the
 # data structures, which are used to let you access the Kindles
 # content in a way, that reminds one of the ActiveRecord usage
