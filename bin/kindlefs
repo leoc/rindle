@@ -1,4 +1,4 @@
-#!/usr/bin/ruby -wKU
+#!/usr/bin/env ruby
 
 require 'rubygems'
 require 'fusefs'
