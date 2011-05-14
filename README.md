@@ -1,19 +1,23 @@
 # Rindle: A Gem packaging multiple kindle tools
 
 Rindle is a package of useful classes to manage the kindles content.
-In mature versions it should provide an object-oriented interface to access the collections and documents on the kindle with all their metadata.
+In mature versions it should provide an object-oriented interface to
+access the collections and documents on the kindle with all their
+metadata. And it should provide a convenient way for converting
+various eBook formats.
+
 
 ## Libraries for kindle access
 
 First load the kindle:
 
-    Kindle.load('/path/to/root')
+    Rindle::Kindle.load('/path/to/root')
 
 Then just use `Kindle::Collection` or `Kindle::File` with an
 ActiveRecord like interface:
 
-    Kindle::Collection.first(:named => 'Test Collection')
-    Kindle::Collection.all(:named => /(.*)[1|2]$/)
+    Rindle::Collection.first(:named => 'Test Collection')
+    Rindle::Collection.all(:named => /(.*)[1|2]$/)
 
 ## KindleFS
 
@@ -23,23 +27,15 @@ Simply call the kindlefs command:
 
     kindlefs kindle_root mount_point
 
-## *.mobi libraries
+## MobiFS - not yet
 
-Libs to create and edit mobi files.
-
-    book = Rindle::Mobi.new :title => 'My book'
-
-Rindle::Mobi::Dir
-
-## MobiFS
-
-### Modifing Files
+### Modifing Files - not yet
 
 You can mount a mobi file or a folder. Each document is mapped to a
 directory with the same name containing the data packed and a
 preview.html which gets generated when read from data.
 
-### Auto Conversion
+### Auto Conversion - not yet
 
 Copy a PDF, an RTF, a DOC or an EPUB file into the mounted folder and
 it gets converted automatically. You can configure the conversion
