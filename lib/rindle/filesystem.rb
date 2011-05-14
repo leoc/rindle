@@ -1,19 +1,24 @@
 require 'fusefs'
+require 'rindle/mixins/regexp'
 
 module Rindle
   class Filesystem < FuseFS::FuseDir
-    COLLECTION_NAME  = /([A-Za-z0-9_\-\s'"]+)/i
-    DOCUMENT_NAME    = /([A-Za-z0-9_\s]+\.[mobi|epub|rtf|pdf]+)/i
-    DOCUMENT_PATH    = /^\/collections\/#{COLLECTION_NAME}\/#{DOCUMENT_NAME}$/
-    COLLECTION_PATH  = /^\/collections\/#{COLLECTION_NAME}$/
+    ROOT_PATH        = /^\/$/
+    COLLECTIONS_PATH = /^\/collections$/.freeze
+    DOCUMENTS_PATH   = /^\/documents$/.freeze
+    PICTURES_PATH    = /^\/pictures$/.freeze
+    COLLECTION_NAME  = /([A-Za-z0-9_\-\s'"]+)/i.freeze
+    COLLECTION_PATH  = /^#{COLLECTIONS_PATH.strip}\/#{COLLECTION_NAME.strip}$/.freeze
+    DOCUMENT_NAME    = /([A-Za-z0-9_\s]+\.[mobi|epub|rtf|pdf]+)/i.freeze
+    DOCUMENT_PATH    = /^\/collections\/#{COLLECTION_NAME.strip}\/#{DOCUMENT_NAME.strip}$/.freeze
     
     def contents path
       puts "contents(#{path})"
       case path
-      when /^\/$/ then [ 'collections', 'books', 'pictures' ]
-      when /^\/collections$/ then Collection.all.map(&:name)
-      when /^\/documents$/ then []
-      when /^\/pictures$/ then []
+      when ROOT_PATH then [ 'collections', 'books', 'pictures' ]
+      when COLLECTIONS_PATH then Collection.all.map(&:name)
+      when DOCUMENTS_PATH then []
+      when PICTURES_PATH then []
       when COLLECTION_PATH
         collection = Collection.find(:first, :named => $1)
         collection.documents.map(&:filename)
@@ -39,11 +44,10 @@ module Rindle
     def directory?(path)
       puts "directory?(#{path})"
       case path
-      when /^\/[collections|books|pictures]$/ then true
-      when COLLECTION_PATH then !Collection.first(:named => $1).nil?
+      when COLLECTIONS_PATH, DOCUMENTS_PATH, PICTURES_PATH then true
+      when COLLECTION_PATH then Collection.exists?(:named => $1)
       else false
       end
-      #true
     rescue Exception => e
       puts e.inspect
       puts e.backtrace
