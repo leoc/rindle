@@ -1,11 +1,4 @@
-
-$LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
-$LOAD_PATH.unshift(File.dirname(__FILE__))
-
 require 'rindle'
-
-require 'rubygems'
-require 'rspec'
 
 def kindle_root; File.join(File.dirname(__FILE__), 'data', 'kindle'); end
 
@@ -13,11 +6,13 @@ def kindle_root; File.join(File.dirname(__FILE__), 'data', 'kindle'); end
 module Rindle
   def self.reset
     self.class_variables.each do |var|
-      eval("#{var} = nil")
+      eval "#{var} = nil"
     end
   end
 end
 
-Rspec.configure do |config|
-  # give me something to do!
+RSpec.configure do |config|
+  config.treat_symbols_as_metadata_keys_with_true_values = true
+  config.run_all_when_everything_filtered = true
+  config.filter_run :focus
 end

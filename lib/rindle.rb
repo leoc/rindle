@@ -1,3 +1,4 @@
+require 'rindle/version'
 require 'rindle/index'
 require 'rindle/collections'
 require 'rindle/collection'
@@ -15,13 +16,13 @@ require 'rindle/mixins/regexp'
 #   Rindle.load(path)
 #
 # After that you may use the models Collection, Document, Album
-module Rindle  
+module Rindle
   @@root_path = nil
   @@collections = nil
   @@index = nil
-  
+
   class NotLoaded < Exception; end
-  
+
   def self.root_path
     if @@root_path
       @@root_path
@@ -45,13 +46,13 @@ module Rindle
       raise NotLoaded
     end
   end
-  
+
   def self.load root_path
     @@root_path = root_path
     @@index = Index.load(root_path)
     @@collections = Collections.load(root_path)
   end
-  
+
   def self.save
     @@collections.save
   end
