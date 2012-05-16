@@ -5,35 +5,33 @@ module Rindle
     class << self
       def all options = {}
         filtered = []
-        Rindle.index.each_pair do |index, path|
+        Rindle.index.each_pair do |index, doc|
           match = true
-          filename = File.basename(path)
           options.each_pair do |key, value|
             case key
             when :named
-              match = match && filename =~ /#{value.is_a?(String) ? Regexp.escape(value) : value}/
+              match = match && doc.filename =~ /#{value.is_a?(String) ? Regexp.escape(value) : value}/
             when :indexed
               match = match && index =~ /#{value.is_a?(String) ? Regexp.escape(value) : value}/
             end
           end
-          filtered << Document.new(index) if match
+          filtered << doc if match
         end
         filtered
       end
 
       def first options = {}
-        Rindle.index.each_pair do |index, path|
+        Rindle.index.each_pair do |index, doc|
           match = true
-          filename = File.basename(path)
           options.each_pair do |key, value|
             case key
             when :named
-              match = match && filename =~ /#{value.is_a?(String) ? Regexp.escape(value) : value}/
+              match = match && doc.filename =~ /#{value.is_a?(String) ? Regexp.escape(value) : value}/
             when :indexed
               match = match && index =~ /#{value.is_a?(String) ? Regexp.escape(value) : value}/
             end
           end
-          return Document.new(index) if match
+          return doc if match
         end
         nil
       end
@@ -42,34 +40,39 @@ module Rindle
         self.send method, options
       end
 
-      def find_unassociated
+      def unassociated
         unassociated = []
-        Rindle.index.each_pair do |index, path|
-          unless Rindle.collections.values.inject(false) { |a, o| a = (a or o['items'].include?(index)) }
-            unassociated << Document.new(index)
+        Rindle.index.each_pair do |index, doc|
+          unless Rindle.collections.values.inject(false) { |acc, col| acc = acc or col.include?(index) }
+            unassociated << doc
           end
         end
         unassociated
       end
 
       def find_by_name name
-        # TODO: implement #find_by_name
+        Rindle.index.values.each do |doc|
+          return doc if doc.filename =~ /#{name.is_a?(String) ? Regexp.escape(name) : name}/
+        end
       end
 
       def find_by_path path
-        # TODO: implement #find_by_path
+        Rindle.index.values.each do |doc|
+          return doc if doc.path =~ /#{path.is_a?(String) ? Regexp.escape(path) : path}/
+        end
+        nil
       end
 
       def find_by_index index
-        # TODO: implement #find_by_index
+        Rindle.index[index]
       end
     end
 
-    attr_accessor :index, :path, :file
+    attr_reader :index, :path
 
     def initialize index, path
-      @path = path
       @index = index
+      @path = path
     end
 
     # Two documents are the same if the indices are equal.
@@ -95,7 +98,9 @@ module Rindle
 
     # Returns an array of all the collections, this document is in.
     def collections
-      # TODO: implement the collection finding method
+      Rindle.collections.select do |col|
+        col.include? self.index
+      end
     end
   end
 end

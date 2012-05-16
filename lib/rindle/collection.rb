@@ -1,7 +1,7 @@
 module Rindle
   class Collection
     class << self
-      def all options={}
+      def all options = {}
         filtered = []
         Rindle.collections.each_pair do |name, collection|
           match = true
@@ -10,44 +10,42 @@ module Rindle
             when :named
               match = match && name =~ /#{value}/
             when :including
-              if value.is_a?(Array)
-                match = !(match && collection['items'] & value).empty?
-              else
-                match = match && collection['items'].include?(value)
-              end
+              match = match && collection.include?(value)
             when :accessed
-              match = match && value == collection['lastAccess']
+              time = value.is_a?(Integer) ? Time.at(value) : value
+              match = match && collection.last_access == time
             end
           end
-          filtered << Collection.new(name.sub('@en-US',''), collection['items'], collection['lastAccess']) if match
+          filtered << collection if match
         end
         filtered
       end
 
-      def first options={}
+      def first options = {}
         Rindle.collections.each_pair do |name, collection|
           match = true
           options.each_pair do |key,value|
             case key
             when :named
-              match = match && name =~ /#{value}/
+              match = match && collection.name =~ /#{value}/
             when :including
-              if value.is_a?(Array)
-                match = !(match && collection['items'] & value).empty?
-              else
-                match = match && collection['items'].include?(value)
-              end
+              match = match && collection.include?(value)
             when :accessed
-              match = match && value == collection['lastAccess']
+              time = value.is_a?(Integer) ? Time.at(value) : value
+              match = match && collection.last_access == time
             end
           end
-          return Collection.new(name.sub('@en-US',''), collection['items'], collection['lastAccess']) if match
+          return collection if match
         end
         nil
       end
 
       def find(method = :all, options={})
         self.send method, options
+      end
+
+      def find_by_name name
+        find(:first, :named => name)
       end
 
       def create name, options = {}
@@ -60,7 +58,7 @@ module Rindle
       end
     end
 
-    attr_reader :name, :indices
+    attr_reader :name, :indices, :last_access
 
     def == other
       other.is_a?(Rindle::Collection) &&
@@ -76,6 +74,7 @@ module Rindle
       @last_access = Time.at(options[:last_access]) if options[:last_access]
     end
 
+    # Returns a hash that may be saved to `collections.json` file.
     def to_hash
       {
         "#{@name}@en-US" => {
@@ -85,30 +84,40 @@ module Rindle
       }
     end
 
+    # Renames the collection. This changes the collections name and
+    # updates the Collections hash.
     def rename! new_name
-      Rindle.collections.delete "#{@name}@en-US"
+      Rindle.collections.delete @name
       @name = new_name
-      Rindle.collections.merge!(to_hash)
+      Rindle.collections[@name] = self
     end
 
+    # Destroys the collection. This removes the collections key from
+    # the collections hash.
     def destroy!
-      Rindle.collections.delete "#{@name}@en-US"
+      Rindle.collections.delete @name
     end
 
-    def add obj
-      if obj
-    end
-
-    # Removes an entry from this collection.
-    def remove obj
-      @documents = nil
-      if obj.is_a?(Document)
-        indices.delete obj.index
-      else
-        indices.delete obj
+    # Adds an index or a document to the collection.
+    def add index
+      index = index.index if index.is_a?(Document)
+      unless indices.include?(index)
+        indices << obj.index
+        @documents = nil
       end
     end
 
+    # Removes an entry from this collection.
+    def remove index
+      index = index.index if index.is_a?(Document)
+      if indices.include?(index)
+        indices.delete index
+        @documents = nil
+      end
+    end
+
+    # Sets the indices array and resets the documents memoized array
+    # of `Document` objects.
     def indices= indices
       @documents = nil
       @indices = indices
@@ -119,11 +128,27 @@ module Rindle
       @documents ||= @indices.map { |i| Rindle.index[i] }
     end
 
-    # Sets the
+    # Sets the array of `Document` objects.
     def documents= documents
       indices = documents.map(&:index)
+      @documents = documents
     end
 
+    # Returns true if the collection includes the given indec,
+    # `Document` or `Array`.
+    def include? obj
+      if obj.is_a?(Array)
+        obj.inject(true) { |acc, o| acc = acc and include?(o) }
+      elsif obj.is_a?(Document)
+        indices.include? obj.index
+      elsif obj.is_a?(String)
+        indices.include? obj
+      else
+        false
+      end
+    end
+
+    # Update the last access timestamp.
     def touch
       last_access = Time.now
     end
