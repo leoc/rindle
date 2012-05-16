@@ -41,32 +41,61 @@ module Rindle
       def find method = :all, options = {}
         self.send method, options
       end
+
+      def find_unassociated
+        unassociated = []
+        Rindle.index.each_pair do |index, path|
+          unless Rindle.collections.values.inject(false) { |a, o| a = (a or o['items'].include?(index)) }
+            unassociated << Document.new(index)
+          end
+        end
+        unassociated
+      end
+
+      def find_by_name name
+        # TODO: implement #find_by_name
+      end
+
+      def find_by_path path
+        # TODO: implement #find_by_path
+      end
+
+      def find_by_index index
+        # TODO: implement #find_by_index
+      end
     end
 
     attr_accessor :index, :path, :file
 
-    def initialize index
-      @path = Rindle.index[index]
-      raise NotFound, "Index #{index} not found!" if @path.nil?
+    def initialize index, path
+      @path = path
       @index = index
     end
 
+    # Two documents are the same if the indices are equal.
     def == other
       @index == other.index
     end
 
-    def self.by value
-      if value.is_a?(RegExp)
-        index, name = Index.search(value)
-      else
-        index = Index.index_for(name)
-        index, name = value, Index.name_for(value)
-      end
-      File.new(index, name)
+    # Returns the filesize of this document.
+    def filesize
+      @filesize ||= File.size(File.join(Rindle.root_path, @path))
     end
 
+    # Returns the filename of this document.
     def filename
-      File.basename(@path)
+      @filename ||= File.basename(@path)
+    end
+
+    # Renames the document. This also means that the index is changed
+    # and the Index-hash is updated.
+    def rename new_name
+      # TODO: implement renaming method
+    end
+
+    # Returns an array of all the collections, this document is in.
+    def collections
+      # TODO: implement the collection finding method
     end
   end
 end
