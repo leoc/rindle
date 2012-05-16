@@ -17,12 +17,12 @@ describe Rindle::Index do
       @index.should have_key("#B001UQ5HVA^EBSP")
     end
   end
-  
+
   context '#new' do
     it 'creates an empty index' do
       @index.should be_empty
     end
-    
+
     it 'derives from Hash' do
       @index.should be_a(Hash)
     end
@@ -32,7 +32,7 @@ describe Rindle::Index do
     Dir[File.join(kindle_root, '{documents,pictures}', '*.{mobi,azw,azw1,pdf}')].should_not be_empty
     Rindle::Index.load(kindle_root).should_not == {}
   end
-  
+
   it 'indexes the dummy files from spec data' do
     @index = Rindle::Index.load(kindle_root)
     @index.should == {
@@ -40,7 +40,8 @@ describe Rindle::Index do
       "#B001UQ5HVA^EBSP" => "/documents/Salvia Divinorum Shamanic Plant-asin_B001UQ5HVA-type_EBSP-v_0.azw",
       "*440f49b58ae78d34f4b8ad3233f04f6b8f5490c2" => "/documents/A book in another collection.mobi",
       "#B000JQU1VS^EBOK" => "/documents/The Adventures of Sherlock Holme-asin_B000JQU1VS-type_EBOK-v_0.azw",
-      "*0849dd9b85fc341d10104f56985e423b3848e1f3" => "/documents/Definitely a Test.pdf"
+      "*0849dd9b85fc341d10104f56985e423b3848e1f3" => "/documents/Definitely a Test.pdf",
+      "*3a102b4032d485025650409b2f7753a1158b199d" => "/documents/This is a test document.rtf"
     }
   end
 end
