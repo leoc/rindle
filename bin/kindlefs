@@ -5,7 +5,7 @@ require 'fusefs'
 require 'rindle'
 
 if ARGV.length < 1
-  puts "usage: kindle_manager <kindle_root> <mount_point>"
+  puts "usage: kindlefs <kindle_root> <mount_point>"
   exit 1
 end
 
