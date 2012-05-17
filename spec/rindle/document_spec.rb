@@ -10,8 +10,8 @@ describe Rindle::Document do
   end
 
   it 'equals another if the index is the same' do
-    doc1 = Rindle::Document.new("#B001UQ5HVA^EBSP", 'documents/ABC-asin_B001UQ5HVA-type_EBSP-v1.azw')
-    doc2 = Rindle::Document.new("#B001UQ5HVA^EBSP", 'documents/ABC-asin_B001UQ5HVA-type_EBSP-v1.azw')
+    doc1 = Rindle::Document.new('documents/ABC-asin_B001UQ5HVA-type_EBSP-v1.azw')
+    doc2 = Rindle::Document.new('documents/ABC-asin_B001UQ5HVA-type_EBSP-v1.azw')
     doc1.should == doc2
   end
 

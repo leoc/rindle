@@ -1,3 +1,5 @@
+require "digest/sha1"
+
 module Rindle
   class Document
     class NotFound < Exception; end
@@ -54,6 +56,7 @@ module Rindle
         Rindle.index.values.each do |doc|
           return doc if doc.filename =~ /#{name.is_a?(String) ? Regexp.escape(name) : name}/
         end
+        nil
       end
 
       def find_by_path path
@@ -70,9 +73,23 @@ module Rindle
 
     attr_reader :index, :path
 
-    def initialize index, path
-      @index = index
-      @path = path
+    def initialize path
+      self.path = path
+    end
+
+    # Sets the path variable and updates the index
+    def path= path
+      @path  = path
+      @index = generate_index
+    end
+
+    # Generates the index for the current path
+    def generate_index
+      if path =~ /([\w\s]+)-asin_([A-Z0-9]+)-type_([A-Z]+)-v_[0-9]+.azw/
+        "##{$2}^#{$3}"
+      else
+        "*#{Digest::SHA1.hexdigest(File.join('/mnt/us', path))}"
+      end
     end
 
     # Two documents are the same if the indices are equal.
@@ -87,13 +104,21 @@ module Rindle
 
     # Returns the filename of this document.
     def filename
-      @filename ||= File.basename(@path)
+      File.basename(@path)
+    end
+
+    # Returns true if the `path` looks like an amazon kindle store file.
+    def amazon?
+      !(path !~ /([\w\s]+)-asin_([A-Z0-9]+)-type_([A-Z]+)-v_[0-9]+.azw/)
     end
 
     # Renames the document. This also means that the index is changed
     # and the Index-hash is updated.
-    def rename new_name
-      # TODO: implement renaming method
+    def rename! new_name
+      Rindle.index.delete(@index)
+      self.path = @path.gsub filename, new_name
+      # TODO: update references in Rindle.collections
+      Rindle.index[@index] = self
     end
 
     # Returns an array of all the collections, this document is in.

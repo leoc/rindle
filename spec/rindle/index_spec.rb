@@ -33,6 +33,7 @@ describe Rindle::Index do
     Rindle::Index.load(kindle_root).should_not == {}
   end
 
+
   it 'indexes the dummy files from spec data' do
     @index = Rindle::Index.load(kindle_root)
     @index.values.map { |o| [ o.index, o.filename ] }.should =~
