@@ -8,7 +8,7 @@ Gem::Specification.new do |gem|
   gem.summary       = %q{Access kindle collection data}
   gem.homepage      = "https://github.com/leoc/rindle"
 
-  gem.files         = `git ls-files`.split($\)
+  gem.files         = `git ls-files`.split("\n")
   gem.executables   = gem.files.grep(%r{^bin/}).map{ |f| File.basename(f) }
   gem.test_files    = gem.files.grep(%r{^(test|spec|features)/})
   gem.name          = "rindle"
