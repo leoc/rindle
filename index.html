@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset='utf-8' />
+    <meta http-equiv="X-UA-Compatible" content="chrome=1" />
+    <meta name="description" content="Rindle : Kindle Collections Management in Ruby!" />
+
+    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
+
+    <title>Rindle</title>
+  </head>
+
+  <body>
+
+    <!-- HEADER -->
+    <div id="header_wrap" class="outer">
+        <header class="inner">
+          <a id="forkme_banner" href="https://github.com/leoc/rindle">View on GitHub</a>
+
+          <h1 id="project_title">Rindle</h1>
+          <h2 id="project_tagline">Kindle Collections Management in Ruby!</h2>
+
+            <section id="downloads">
+              <a class="zip_download_link" href="https://github.com/leoc/rindle/zipball/master">Download this project as a .zip file</a>
+              <a class="tar_download_link" href="https://github.com/leoc/rindle/tarball/master">Download this project as a tar.gz file</a>
+            </section>
+        </header>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div id="main_content_wrap" class="outer">
+      <section id="main_content" class="inner">
+        <p>Rindle is a package of useful classes to manage the kindles content.
+In mature versions it should provide an object-oriented interface to
+access the collections and documents on the kindle with all their
+metadata.</p>
+
+<h2>Installation</h2>
+
+<p>Add this line to your application's Gemfile:</p>
+
+<pre><code>gem 'rindle'
+</code></pre>
+
+<p>And then execute:</p>
+
+<pre><code>$ bundle
+</code></pre>
+
+<p>Or install it yourself as:</p>
+
+<pre><code>$ gem install rindle
+</code></pre>
+
+<h2>Usage</h2>
+
+<p>First load the kindle:</p>
+
+<pre><code>Rindle.load '/path/to/root'
+</code></pre>
+
+<p>Then just use <code>Rindle::Collection</code> or <code>Rindle::Document</code> with an
+ActiveRecord like interface:</p>
+
+<pre><code>Rindle::Collection.first named: 'Test Collection'
+collections = Rindle::Collection.all named: /(.*)[1|2]$/
+Rindle::Document.find_by_name 'A book.pdf'
+documents = Rindle::Document.all
+</code></pre>
+
+<h2>Contributing</h2>
+
+<ol>
+<li>Fork it</li>
+<li>Create your feature branch (<code>git checkout -b my-new-feature</code>)</li>
+<li>Commit your changes (<code>git commit -am 'Added some feature'</code>)</li>
+<li>Push to the branch (<code>git push origin my-new-feature</code>)</li>
+<li>Create new Pull Request</li>
+</ol>
+      </section>
+    </div>
+
+    <!-- FOOTER  -->
+    <div id="footer_wrap" class="outer">
+      <footer class="inner">
+        <p class="copyright">Rindle maintained by <a href="https://github.com/leoc">leoc</a></p>
+        <p>Published with <a href="http://pages.github.com">GitHub Pages</a></p>
+      </footer>
+    </div>
+
+    
+
+  </body>
+</html>
