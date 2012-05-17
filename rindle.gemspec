@@ -6,7 +6,7 @@ Gem::Specification.new do |gem|
   gem.email         = ["leoc.git@gmail.com"]
   gem.description   = %q{The Rindle gem provides an object-oriented way to manage kindle collection data.}
   gem.summary       = %q{Access kindle collection data}
-  gem.homepage      = "https://github.com/leoc/rindle"
+  gem.homepage      = "http://leoc.github.com/rindle"
 
   gem.files         = `git ls-files`.split("\n")
   gem.executables   = gem.files.grep(%r{^bin/}).map{ |f| File.basename(f) }
