@@ -1,4 +1,4 @@
-module Rindle
+class Rindle
   module Mixins
     module Regexp
 
@@ -8,7 +8,7 @@ module Rindle
       def strip
         self.source.gsub(/^\^/,'').gsub(/\$$/,'')
       end
-      
+
     end
   end
 end

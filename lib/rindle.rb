@@ -14,45 +14,47 @@ require 'rindle/mixins/regexp'
 #
 #   Rindle.load(path)
 #
-# After that you may use the models Collection, Document, Album
-module Rindle
+# After that you may use the models `Collection` and `Document`.
+class Rindle
   @@root_path = nil
   @@collections = nil
   @@index = nil
 
   class NotLoaded < Exception; end
 
-  def self.root_path
-    if @@root_path
-      @@root_path
-    else
-      raise NotLoaded
+  class << self
+    def root_path
+      if @@root_path
+        @@root_path
+      else
+        raise NotLoaded
+      end
     end
-  end
 
-  def self.index
-    if @@index
-      @@index
-    else
-      raise NotLoaded
+    def index
+      if @@index
+        @@index
+      else
+        raise NotLoaded
+      end
     end
-  end
 
-  def self.collections
-    if @@collections
-      @@collections
-    else
-      raise NotLoaded
+    def collections
+      if @@collections
+        @@collections
+      else
+        raise NotLoaded
+      end
     end
-  end
 
-  def self.load root_path
-    @@root_path = root_path
-    @@index = Index.load(root_path)
-    @@collections = Collections.load(root_path)
-  end
+    def load root_path
+      @@root_path = root_path
+      @@index = Index.load(root_path)
+      @@collections = Collections.load(root_path)
+    end
 
-  def self.save
-    @@collections.save
+    def save
+      @@collections.save
+    end
   end
 end

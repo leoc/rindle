@@ -3,7 +3,7 @@ require 'rindle'
 def kindle_root; File.join(File.dirname(__FILE__), 'data', 'kindle'); end
 
 # this is to reset the Singleton'ish nature of the Kindle module
-module Rindle
+class Rindle
   def self.reset
     self.class_variables.each do |var|
       eval "#{var} = nil"

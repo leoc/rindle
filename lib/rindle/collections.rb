@@ -3,7 +3,7 @@ require 'json'
 
 require 'rindle/collection'
 
-module Rindle
+class Rindle
   class Collections < Hash
 
     class NoSuchFile < Exception; end

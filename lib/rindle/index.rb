@@ -2,7 +2,7 @@
 require "rubygems"
 require "json"
 
-module Rindle
+class Rindle
   class Index < Hash
     def initialize
       @index = {}

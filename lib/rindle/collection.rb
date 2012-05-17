@@ -1,4 +1,4 @@
-module Rindle
+class Rindle
   class Collection
     class << self
       def all options = {}

@@ -1,6 +1,6 @@
 require "digest/sha1"
 
-module Rindle
+class Rindle
   class Document
     class NotFound < Exception; end
 
