@@ -3,7 +3,6 @@ require 'rindle/index'
 require 'rindle/collections'
 require 'rindle/collection'
 require 'rindle/document'
-require 'rindle/filesystem'
 
 require 'rindle/mixins/regexp'
 
