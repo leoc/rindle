@@ -31,7 +31,13 @@ class Rindle
         raise NoSuchFile, "Not found: #{@collections_file}"
       end
 
-      hash = File.open(@collections_file, 'r') { |file| JSON.load(file) }
+      hash = File.open(@collections_file, 'r') do |file|
+        begin
+          JSON.load(file)
+        rescue Exception => e
+          {}
+        end
+      end
       hash.each_pair do |name, data|
         col = Collection.new name, :indices => data['items'],
                                    :last_access => data['lastAccess']
