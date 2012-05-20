@@ -45,7 +45,15 @@ class Rindle
       end
 
       def find_by_name name
-        find(:first, :named => name)
+        Rindle.collections.values.each do |col|
+          case name
+          when String
+            return col if col.name == name
+          when Regexp
+            return col if col.name =~ name
+          end
+        end
+        nil
       end
 
       def create name, options = {}

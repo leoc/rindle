@@ -71,14 +71,12 @@ class Rindle
 
       def find_by_name name
         Rindle.index.values.each do |doc|
-          return doc if doc.filename =~ /#{name.is_a?(String) ? Regexp.escape(name) : name}/
-        end
-        nil
-      end
-
-      def find_by_path path
-        Rindle.index.values.each do |doc|
-          return doc if doc.path =~ /#{path.is_a?(String) ? Regexp.escape(path) : path}/
+          case name
+          when String
+            return doc if doc.filename == name
+          when Regexp
+            return doc if doc.filename =~ name
+          end
         end
         nil
       end
