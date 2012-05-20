@@ -69,27 +69,22 @@ class Rindle
       def find_by_index index
         Rindle.index[index]
       end
+
+      # Generates the index for the current path
+      def generate_index path
+        if path =~ /([\w\s]+)-asin_([A-Z0-9]+)-type_([A-Z]+)-v_[0-9]+.azw/
+          "##{$2}^#{$3}"
+        else
+          "*#{Digest::SHA1.hexdigest(File.join('/mnt/us', path))}"
+        end
+      end
     end
 
     attr_reader :index, :path
 
     def initialize path
-      self.path = path
-    end
-
-    # Sets the path variable and updates the index
-    def path= path
       @path  = path
-      @index = generate_index
-    end
-
-    # Generates the index for the current path
-    def generate_index
-      if path =~ /([\w\s]+)-asin_([A-Z0-9]+)-type_([A-Z]+)-v_[0-9]+.azw/
-        "##{$2}^#{$3}"
-      else
-        "*#{Digest::SHA1.hexdigest(File.join('/mnt/us', path))}"
-      end
+      @index = Rindle::Document.generate_index(path)
     end
 
     # Two documents are the same if the indices are equal.
@@ -116,14 +111,24 @@ class Rindle
     # and the Index-hash is updated.
     def rename! new_name
       Rindle.index.delete(@index)
-      self.path = @path.gsub filename, new_name
-      # TODO: update references in Rindle.collections
+
+      old_index = @index
+      @path.gsub!(filename, new_name)
+      @index = Rindle::Document.generate_index(@path)
+
+      Rindle.collections.values.each do |col|
+        if col.include?(old_index)
+          col.remove old_index
+          col.add @index
+        end
+      end
+
       Rindle.index[@index] = self
     end
 
     # Returns an array of all the collections, this document is in.
     def collections
-      Rindle.collections.select do |col|
+      Rindle.collections.values.select do |col|
         col.include? self.index
       end
     end
