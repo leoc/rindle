@@ -18,7 +18,7 @@ class Rindle
 
     def save
       hash = {}
-      values.each do |coll|
+      values.each do |col|
         hash.merge! col.to_hash
       end
       File.open(@collections_file, 'w+') do |f|
