@@ -132,8 +132,12 @@ class Rindle
       Rindle.index.delete(@index)
 
       old_index = @index
+      old_path = @path.dup
       @path.gsub!(filename, new_name)
       @index = Rindle::Document.generate_index(@path)
+
+      File.rename File.join(Rindle.root_path, old_path),
+                  File.join(Rindle.root_path, @path)
 
       Rindle.collections.values.each do |col|
         if col.include?(old_index)
@@ -143,6 +147,7 @@ class Rindle
       end
 
       Rindle.index[@index] = self
+      true
     end
 
     def destroy!

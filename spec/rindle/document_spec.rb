@@ -184,6 +184,11 @@ describe Rindle::Document do
     it 'should set the new path' do
       @doc.path.should == '/documents/Indeed a test.mobi'
     end
+
+    it 'should rename the actual file' do
+      File.should_not exist File.join(Rindle.root_path, '/documents/A test aswell.mobi')
+      File.should exist File.join(Rindle.root_path, '/documents/Indeed a test.mobi')
+    end
   end
 
   describe '#destroy!' do
