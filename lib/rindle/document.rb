@@ -5,6 +5,23 @@ class Rindle
     class NotFound < Exception; end
 
     class << self
+
+      def create filename, options = {}
+        doc = Rindle::Document.new filename
+        Rindle.index[doc.index] = doc
+
+        absolute_path = File.join(Rindle.root_path, doc.path)
+        if options[:data]
+          File.open(absolute_path, 'w+') do |f|
+            f.write options[:data]
+          end
+        else
+          FileUtils.touch absolute_path
+        end
+
+        doc
+      end
+
       def all options = {}
         filtered = []
         Rindle.index.each_pair do |index, doc|
@@ -83,6 +100,8 @@ class Rindle
     attr_reader :index, :path
 
     def initialize path
+      path = "/#{File.join('documents', path)}" unless path =~ %r{^/{0,1}documents/}
+      path = "/#{path}" unless path =~ %r{^/}
       @path  = path
       @index = Rindle::Document.generate_index(path)
     end
@@ -125,6 +144,8 @@ class Rindle
 
       Rindle.index[@index] = self
     end
+
+
 
     # Returns an array of all the collections, this document is in.
     def collections

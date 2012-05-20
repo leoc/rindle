@@ -10,9 +10,42 @@ describe Rindle::Document do
   end
 
   it 'equals another document if the index is the same' do
-    doc1 = Rindle::Document.new('documents/ABC-asin_B001UQ5HVA-type_EBSP-v1.azw')
-    doc2 = Rindle::Document.new('documents/ABC-asin_B001UQ5HVA-type_EBSP-v1.azw')
+    doc1 = Rindle::Document.new('ABC-asin_B001UQ5HVA-type_EBSP-v1.azw')
+    doc2 = Rindle::Document.new('ABC-asin_B001UQ5HVA-type_EBSP-v1.azw')
     doc1.should == doc2
+  end
+
+  describe '.create' do
+    before :all do
+      @doc1 = Rindle::Document.create 'A test file.pdf'
+      @doc2 = Rindle::Document.create 'Another test file.rtf',
+                                      :data => 'Some dummy data'
+    end
+
+    after :all do
+      Rindle.index.delete @doc1.index
+      FileUtils.rm_f File.join(Rindle.root_path, @doc1.path)
+      Rindle.index.delete @doc2.index
+      FileUtils.rm_f File.join(Rindle.root_path, @doc2.path)
+    end
+
+    it 'should return a new document' do
+      @doc1.should be_a(Rindle::Document)
+      @doc2.should be_a(Rindle::Document)
+    end
+
+    it 'should add the document to the index' do
+      Rindle.index['*d596158a92f064c94e690c2480e2d09ba891dcc2'].should == @doc1
+      Rindle.index['*ecb3bda81a628550bd056dca449cc1a37b523475'].should == @doc2
+    end
+
+    it 'should write data if given' do
+      File.read(File.join(Rindle.root_path, @doc2.path)).should == 'Some dummy data'
+    end
+
+    it 'should touch file if no data given' do
+      File.should exist File.join(Rindle.root_path, @doc1.path)
+    end
   end
 
   describe '.find' do
@@ -51,6 +84,21 @@ describe Rindle::Document do
       end
     end
   end
+
+  describe '.new' do
+    it 'should prepend slash if missing' do
+      doc = Rindle::Document.new 'documents/ABC.pdf'
+      doc.path.should == '/documents/ABC.pdf'
+    end
+
+    it 'should prepend /documents if missing' do
+      doc = Rindle::Document.new 'ABC.pdf'
+      doc.path.should == '/documents/ABC.pdf'
+      doc = Rindle::Document.new '/ABC.pdf'
+      doc.path.should == '/documents/ABC.pdf'
+    end
+  end
+
 
   describe '.unassociated' do
     it 'should return unassociated documents' do
