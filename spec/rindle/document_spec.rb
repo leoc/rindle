@@ -186,6 +186,54 @@ describe Rindle::Document do
     end
   end
 
+  describe '#destroy!' do
+    before :all do
+      @doc = Rindle::Document.find_by_name 'A test aswell.mobi'
+      @doc.destroy!
+    end
+
+    after :all do
+      doc = Rindle::Document.create 'A test aswell.mobi', :data => 'Some dummy data'
+      Rindle.collections['collection1'].add doc
+    end
+
+    it 'should remove the document from index' do
+      Rindle.index.should_not have_key '*18be6fcd5d5df39c1a96cd22596bbe7fe01db9b7'
+    end
+
+    it 'should remove the document from any collection' do
+      Rindle.collections['collection1'].
+        include?('*18be6fcd5d5df39c1a96cd22596bbe7fe01db9b7').
+        should == false
+    end
+  end
+
+  describe '#delete!' do
+    before :all do
+      @doc = Rindle::Document.find_by_name 'A test aswell.mobi'
+      @doc.delete!
+    end
+
+    after :all do
+      doc = Rindle::Document.create 'A test aswell.mobi', :data => 'Some dummy data'
+      Rindle.collections['collection1'].add doc
+    end
+
+    it 'should remove the document from index' do
+      Rindle.index.should_not have_key '*18be6fcd5d5df39c1a96cd22596bbe7fe01db9b7'
+    end
+
+    it 'should remove the document from any collection' do
+      Rindle.collections['collection1'].
+        include?('*18be6fcd5d5df39c1a96cd22596bbe7fe01db9b7').
+        should == false
+    end
+
+    it 'should delete the documents file' do
+      File.should_not exist File.join(Rindle.root_path, @doc.path)
+    end
+  end
+
   describe '#collections' do
     it 'should return the associated collections' do
       @doc = Rindle::Document.find_by_name('A test aswell.mobi')

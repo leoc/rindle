@@ -145,7 +145,17 @@ class Rindle
       Rindle.index[@index] = self
     end
 
+    def destroy!
+      Rindle.collections.values.each do |col|
+        col.remove index if col.include? index
+      end
+      Rindle.index.delete index
+    end
 
+    def delete!
+      destroy!
+      FileUtils.rm_f File.join(Rindle.root_path, path)
+    end
 
     # Returns an array of all the collections, this document is in.
     def collections
