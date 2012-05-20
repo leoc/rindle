@@ -101,8 +101,8 @@ class Rindle
     # Adds an index or a document to the collection.
     def add index
       index = index.index if index.is_a?(Document)
-      unless indices.include?(index)
-        indices << obj.index
+      unless @indices.include?(index)
+        @indices << index
         @documents = nil
       end
     end
@@ -110,8 +110,8 @@ class Rindle
     # Removes an entry from this collection.
     def remove index
       index = index.index if index.is_a?(Document)
-      if indices.include?(index)
-        indices.delete index
+      if @indices.include?(index)
+        @indices.delete index
         @documents = nil
       end
     end
@@ -130,11 +130,11 @@ class Rindle
 
     # Sets the array of `Document` objects.
     def documents= documents
-      indices = documents.map(&:index)
+      self.indices = documents.map(&:index)
       @documents = documents
     end
 
-    # Returns true if the collection includes the given indec,
+    # Returns true if the collection includes the given index,
     # `Document` or `Array`.
     def include? obj
       if obj.is_a?(Array)
